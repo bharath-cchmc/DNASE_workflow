@@ -1,0 +1,29 @@
+cwlVersion: v1.0
+
+baseCommand: [awk]
+
+class: CommandLineTool
+
+requirements:
+- class: InlineJavascriptRequirement
+- class: ShellCommandRequirement
+
+inputs:
+  input:
+    type: File
+    doc: |
+      Input BED file to be seperated by chromosome name
+    inputBinding:
+      position: 2
+
+outputs:
+  output:
+    type: stdout
+
+arguments:
+  - valueFrom: |
+      ${
+        var r ='{f = $1 ".txt"; print >> f; close(f)}';
+        return r;
+      }
+    position: 1

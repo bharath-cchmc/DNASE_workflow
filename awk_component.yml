@@ -1,0 +1,30 @@
+cwlVersion: v1.0
+
+baseCommand: [awk]
+
+class: CommandLineTool
+
+requirements:
+- class: InlineJavascriptRequirement
+
+inputs:
+  input:
+    type: File
+    doc: |
+      Input BAM file
+    inputBinding:
+      position: 2
+
+outputs:
+  output:
+    type: stdout
+
+arguments:
+   - valueFrom: |
+      ${
+        var r = '{print $1 "\t" $2 "\t" $3 "\t" $6}';
+        return r
+      }
+     position: 1
+
+stdout: $(inputs.input.nameroot+".bed")

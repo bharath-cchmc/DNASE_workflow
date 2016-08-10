@@ -1,0 +1,31 @@
+cwlVersion: v1.0
+
+baseCommand: ["/usr/local/bin/calcDFT/calcDFT"]
+
+class: CommandLineTool
+
+requirements:
+- class: InlineJavascriptRequirement
+- $import: dnase-docker.yml
+
+inputs:
+  input:
+    type: File
+    doc: |
+      Input BAM file
+    inputBinding:
+      position: 2
+
+  directory:
+    type: Directory
+    doc: |
+      Input directory where all chr(N).fa files are present
+    inputBinding:
+      position: 1
+      valueFrom: $(inputs.directory.path)
+
+outputs:
+  output:
+    type: File
+    outputBinding:
+      glob: $("dinuc_freq_table_ac_"+input.input.nameroot+".txt")

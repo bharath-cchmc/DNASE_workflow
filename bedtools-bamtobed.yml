@@ -1,0 +1,119 @@
+#!/usr/bin/env cwl-runner
+cwlVersion: v1.0
+
+class: CommandLineTool
+
+baseCommand: [bedtools, bamtobed]
+
+requirements:
+- $import: dnase-docker.yml
+- class: InlineJavascriptRequirement
+
+inputs:
+  bamfile:
+    type: File
+    doc: |
+      Input bam File
+    inputBinding: 
+      position: 2
+      prefix: "-i"
+
+  output_name:
+    type: string
+    doc: | 
+      output file name
+  
+  bedpe:
+    type: boolean?
+    doc: |
+      Write BEDPE format.
+      Requires BAM to be grouped or sorted by query.
+    inputBinding:
+      position: 1
+      prefix: "-bedpe"
+
+  mate1:
+    type: boolean?
+    doc: | 
+      When writing BEDPE (-bedpe) format, 
+      always report mate one as the first BEDPE "block".
+    inputBinding:
+      position: 1
+      prefix: "-mate1"
+
+  bed12:
+    type: boolean?
+    doc: |
+      Write "blocked" BED format (aka "BED12"). Forces -split.
+      http://genome-test.cse.ucsc.edu/FAQ/FAQformat#format1
+    inputBinding: 
+      position: 1
+      prefix: "-bed12"
+
+  split:
+    type: boolean?
+    doc: |
+      Report "split" BAM alignments as separate BED entries.
+      splits only on N CIGAR operations.
+    inputBinding:
+      position: 1
+      prefix: "-split"
+
+  split:
+    type: boolean?
+    doc: |
+      Split alignments based on N and D CIGAR operators.
+      Forces -split.
+    inputBinding:
+      position: 1
+      prefix: "-splitD"
+  
+  ed:
+    type: boolean?
+    doc: |
+      Use BAM edit distance (NM tag) for BED score.
+      Default for BED is to use mapping quality.
+      Default for BEDPE is to use the minimum of
+      the two mapping qualities for the pair.
+      When -ed is used with -bedpe, the total edit
+      distance from the two mates is reported.
+    inputBinding:
+      position: 1
+      prefix: "ed"
+
+  tag:
+    type: string?
+    doc: |
+      Split alignments based on N and D CIGAR operators.
+      Forces -split.
+    inputBinding:
+      position: 1
+      prefix: "-splitD"
+
+  color:
+    type: string?
+    doc: |
+      An R,G,B string for the color used with BED12 format.
+      Default is (255,0,0).
+    inputBinding:
+      position: 1
+      prefix: "-color"
+
+  cigar:
+    type: boolean?
+    doc: |
+      Add the CIGAR string to the BED entry as a 7th column.
+    inputBinding:
+      position: 1
+      prefix: "-cigar"
+
+outputs: 
+  output:
+    type: stdout
+
+stdout: |
+  $(inputs.output_name)
+
+
+
+

@@ -1,0 +1,39 @@
+cwlVersion: v1.0
+
+baseCommand: [sed]
+
+class: CommandLineTool
+
+requirements:
+- class: InlineJavascriptRequirement
+- class: ShellCommandRequirement
+
+inputs:
+  input:
+    type: File
+    doc: |
+      Input BAM file
+    inputBinding:
+      position: 2
+
+outputs:
+  output:
+    type: stdout
+
+arguments:
+  - valueFrom: |
+      ${
+        var r = 's/+/F/g';
+        return r
+      }
+    prefix: -e
+    position: 1
+  - valueFrom: |
+      ${
+         var r = "| sed -e 's/-/R/g'"
+         return r
+       }
+    shellQuote: false
+    position: 3
+
+stdout: $(inputs.input.nameroot+".bed")
