@@ -6,24 +6,25 @@ class: CommandLineTool
 
 requirements:
 - class: InlineJavascriptRequirement
-- class: ShellCommandRequirement
 
 inputs:
   input:
     type: File
     doc: |
-      Input BED file to be seperated by chromosome name
+      Input BAM file
     inputBinding:
       position: 2
 
 outputs:
   output:
-    type: stdout
+    type: Directory
+    outputBinding:
+      glob: $(runtime.outdir)
 
 arguments:
   - valueFrom: |
       ${
-        var r ='{f = $1 ".txt"; print >> f; close(f)}';
+        var r = 'BEGIN{FS="\t"; OFS="\t"} {f = $1 "_.txt"; print >> f; close(f)}';
         return r;
       }
     position: 1

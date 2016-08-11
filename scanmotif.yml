@@ -1,0 +1,112 @@
+cwlVersion: v1.0
+
+baseCommand: [scanMotifGenomeWide.pl]
+
+class: CommandLineTool
+
+hints:
+  DockerRequirement:
+    dockerPull: homer
+    dockerFile: |
+       FROM scidap/scidap:v0.0.1
+       RUN apt-get update && \
+       apt-get install -y curl ghostscript zip g++ gcc gzip perl5 wget cmake && \
+       wget http://weblogo.berkeley.edu/release/weblogo.2.8.2.tar.gz && tar xzvf weblogo.2.8.2.tar.gz
+       ENV PATH /weblogo:$PATH
+       RUN mkdir -p /root/home/bin && echo "#!/usr/bin/sh" > /root/home/bin/blat && chmod a+x /root/home/bin/blat
+       ENV PATH /root/home/bin:$PATH
+       ADD http://homer.salk.edu/homer/configureHomer.pl /root/home/configureHomer.pl
+       RUN perl /root/home/configureHomer.pl -install
+
+requirements:
+- class: InlineJavascriptRequirement
+
+inputs:
+  motif: 
+    type: File
+    doc: |
+      Input Motif
+    inputBinding:
+      position: 1
+  
+  genome: 
+    type: File
+    doc: |
+      Input Genome
+    inputBinding:
+      position: 2
+  
+  5p:
+    type: boolean?
+    doc: |
+      Optional (report positions centered on the 5' start of the motif)
+    inputBinding:
+      position: 3
+      prefix: "-5p"
+  
+  bed: 
+    type: boolean?
+    doc: |
+      format as a BED file, i.e. for UCSC upload
+    inputBinding:
+      position: 3
+      prefix: "-bed"
+
+  int: 
+    type: boolean?
+    doc: |
+      (round motif scores to nearest integer, use if making bigBed file)
+    inputBinding:
+      position: 3
+      prefix: "-int"
+
+  homer1: 
+    type: boolean?
+    doc: |
+      (use the original homer)
+    inputBinding:
+      position: 3
+      prefix: "-homer1"
+
+  homer2: 
+    type: boolean?
+    doc: |
+      (use homer2 instead of the original homer, default)
+    inputBinding:
+      position: 3
+      prefix: "home2"
+
+  keepAll: 
+    type: boolean?
+    doc: |
+      (keep ALL sites, even ones that overlap, default is to keep one)
+    inputBinding:
+      position: 3
+      prefix: "-keepAll"
+  
+  mask: 
+    type: boolean?
+    doc: |
+      (search for motifs in repeat masked sequence)
+    inputBinding:
+      position: 3
+      prefix: "-mask"
+
+  p: 
+    type: int?
+    doc: |
+      (Number of CPUs to use)
+    inputBinding:
+      position: 3
+      prefix: "-p"
+
+  output_name:
+    type: string
+    doc: |
+      Name of the output file
+
+outputs: 
+  output: 
+    type: File
+    outputBinding:
+      glob: $(inputs.output_name+"")

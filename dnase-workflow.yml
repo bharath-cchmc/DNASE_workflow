@@ -23,7 +23,7 @@ inputs:
 outputs:
   output:
     type: File
-    outputSource: sed_component/output
+#    outputSource: sed_component/output
 
 steps:
   bamtobed:
@@ -33,16 +33,21 @@ steps:
       output_name: output_name
     out: [output]
 
-  awk_component:
-    run: awk_component.yml
+  clean_columns:
+    run: clean_columns.yml
     in:
       input: bamtobed/output
     out: [output]
 
-  sed_component:
-    run: sed_component.yml
+  change_strand_info:
+    run: change_strand_info.yml
     in:
-      input: awk_component/output
+      input: clean_columns/output
     out: [output]
+
+  seperate_chromosome:
+    run: seperate_chr.yml
+    in: 
+      input: change_strand_info/output
 
   
